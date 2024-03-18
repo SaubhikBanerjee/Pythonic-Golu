@@ -1,0 +1,14 @@
+# I am using Linux to run this local Milvus, but it will not be very different / difficult with other OS.
+
+##########
+# Milvus #
+##########
+
+# Start the docker image
+sudo docker compose up -d
+# map the port
+sudo docker port milvus-standalone 19530/tcp
+# Check the process are running - you should three process
+sudo docker compose ps
+# Done for today? then down the database!
+sudo docker compose down
