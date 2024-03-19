@@ -9,15 +9,18 @@ def upload_file(filename):
     try:
         my_config = ReadConfig("config/config.ini")
         # Taking the filename as object name
-        file_object = basename(filename)
+        # file_object = basename(filename)
         # Creating an AWS session
         session = boto3.Session(profile_name=my_config.aws_profile_name)
         # Creating a S3 client
         s3_client = session.client("s3")
-        response = s3_client.upload_file(Filename=filename,
-                                     Bucket=my_config.s3_bucket,
-                                     Key=file_object
-                                     )
+        # response = s3_client.upload_file(Filename=filename,
+        #                              Bucket=my_config.s3_bucket,
+        #                              Key=file_object
+        #                              )
+        response = s3_client.upload_fileobj(filename, Bucket=my_config.s3_bucket,
+                                            Key=filename.name
+                                            )
         return True
     except ClientError as e:
         print(e)
