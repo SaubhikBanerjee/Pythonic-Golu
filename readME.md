@@ -51,16 +51,17 @@ This is the main file used to load various Python Books into Milvus! All the act
 Python module called [load_books.py](libs%2Fload_books.py)
 #### [golu.py](golu.py):
 This file is currently under development. I have a plan to deploy Pythonic Golu in Streamlit 
-cloud along with some persistence Milvus instance.
+cloud along with some persistence Milvus instance. To run this use ***`streamlit run .\golu.py`***
+This is locally functional and can produce output.
 #### [flush_all_milvus_collection.py](libs%2Fflush_all_milvus_collection.py):
 This is a stand-alone file used to flush and compacting Milvus collection. There is a problem with flush
 in earlier version of Milvus. https://github.com/milvus-io/milvus/discussions/31195
 #### [semantic_search.py](libs%2Fsemantic_search.py):
-This is the file used to do a semantic search on Milvus with your question!.
+This is the library used to do a semantic search on Milvus with your question!.
 #### [run_semantic_search.py](run_semantic_search.py):
-Run some native semantic search using native Pymilvus.
+Run some native semantic search using native Pymilvus. Internally it is using [semantic_search.py](libs%2Fsemantic_search.py)
 #### [run_semantic_search_langchain.py](run_semantic_search_langchain.py):
-Run semantic search using Langchain.
+Run semantic search using Langchain. This is also internally using [semantic_search.py](libs%2Fsemantic_search.py)
 #### [ask_questions_v1.py](ask_questions_v1.py):
 Join all the pieces together and get a response from local LLM using LangChain RetrievalQA.
 
@@ -69,14 +70,14 @@ Well, I have observed this as one of the problem with Golu. I am running this in
 which doesn't have any GPU. I am only relying on CPU.
 If you have GPU power, then definitely that will be faster.
 # Startup 🚀
-1. Clone this repo `git clone https://github.com/nicknochnack/Llama2RAG`
-2. Go into the directory `cd PythonicGolu`
+1. Clone this repo `git clone https://github.com/SaubhikBanerjee/Pythonic-Golu`
+2. Go into the directory `cd Pythonic-Golu`
 3. Setup your Milvus database and update config.ini accordingly.
 4. Run  [create_collection_and_index.py](create_collection_and_index.py) to create Milvus collections & indexes.
 5. Run  [load_python_books.py](load_python_books.py) to load some data from your documents.
 6. Now try some semantic search! [run_semantic_search.py](run_semantic_search.py) and [run_semantic_search_langchain.py](run_semantic_search_langchain.py)
 7. Next try asking some questions![ask_questions_v1.py](ask_questions_v1.py)
-8. Lastly try the web interface using Streamlit!! (coming soon..)
+8. Lastly try the web interface using Streamlit!! ***`streamlit run .\golu.py`***
 
 #### AWS profile creation using AWS CLI
 Download and install AWS CLI from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html based on our operating system.
