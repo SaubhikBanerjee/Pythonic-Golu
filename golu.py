@@ -1,5 +1,7 @@
 import streamlit as st
 from libs import upload_file
+from ask_questions_v1 import ask_question
+import timeit
 
 
 def main():
@@ -13,6 +15,18 @@ def main():
     if st.button("Ask Golu", type="primary"):
         if user_question:
             st.write(user_question)
+            start_time = timeit.default_timer()  # Start timer
+            with st.spinner("Golu is searching.."):
+                response = ask_question(user_question)
+            with st.chat_message("assistant"):
+                st.markdown(response["result"])
+                end_time = timeit.default_timer()  # End timer
+                total_time = (end_time - start_time) / 60
+                st.markdown("Time to retrieve response %.2f minutes):" % total_time)
+            source_docs = response['source_documents']
+            for i, doc in enumerate(source_docs):
+                st.info(f'\nSource Document {i + 1}\n')
+                st.info(f'Source Text: {doc.page_content}')
 
     with st.sidebar:
         st.subheader("You can upload you Python book here:")
