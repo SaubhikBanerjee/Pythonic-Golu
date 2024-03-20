@@ -22,7 +22,7 @@ def main():
             with st.spinner("Golu is searching.."):
                 if select_option == 'Local Llama2 - Run locally free but slower!':
                     response = ask_question(user_question)
-                elif  select_option == 'OpenAI - Faster and efficient - NOT free!':
+                elif select_option == 'OpenAI - Faster and efficient - NOT free!':
                     response = ask_question_openai(user_question)
                 else:
                     response = ask_question(user_question)

@@ -5,7 +5,7 @@ Here we are using RetrievalQA from langchain along with Langchain Milvus vector 
 and as_retriever.
 The only problem I can see is you can't get the score which is available in Langchain
 similarity search or even in PyMilvus collection.search()
-We use a local lla2 LLM from libs/local_llm.py
+We use OpenAI gpt-3.5-turbo as LLM here.
 """
 import timeit
 from langchain_community.embeddings import HuggingFaceEmbeddings
