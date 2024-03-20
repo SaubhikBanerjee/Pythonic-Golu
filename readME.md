@@ -13,6 +13,7 @@ I will try to host it with Streamlit cloud with a persistence Milvus instance, s
 can leverage my huge Python database of question and answers.<br />
 At present, you can use it in your local Milvus with your own dataset. Just clone this repo and 
 get started!  ***Pythonic Golu is completely on open source, so no extra cost!!***
+Golu has flexibility to use OpenAI also but the cost is yours!
 ### How to get/run Milvus?
 Well, I am using a docker compose file, which is part of the repository. You can use that too
 and necessary command to get start with that image is also given.
@@ -69,6 +70,7 @@ Join all the pieces together and get a response from local LLM using LangChain R
 Well, I have observed this as one of the problem with Golu. I am running this in my laptop
 which doesn't have any GPU. I am only relying on CPU.
 If you have GPU power, then definitely that will be faster.
+Golu is much faster if you use the OpenAI version, but remember that can be costly!
 # Startup 🚀
 1. Clone this repo `git clone https://github.com/SaubhikBanerjee/Pythonic-Golu`
 2. Go into the directory `cd Pythonic-Golu`
@@ -76,8 +78,9 @@ If you have GPU power, then definitely that will be faster.
 4. Run  [create_collection_and_index.py](create_collection_and_index.py) to create Milvus collections & indexes.
 5. Run  [load_python_books.py](load_python_books.py) to load some data from your documents.
 6. Now try some semantic search! [run_semantic_search.py](run_semantic_search.py) and [run_semantic_search_langchain.py](run_semantic_search_langchain.py)
-7. Next try asking some questions![ask_questions_v1.py](ask_questions_v1.py)
-8. Lastly try the web interface using Streamlit!! ***`streamlit run .\golu.py`***
+7. Next try asking some questions![ask_questions_v1.py](ask_questions_v1.py). This is with local Llama2.
+8. Next try asking some question with OpenAI gpt-3.5-turbo! [ask_questions_v2.py](ask_questions_v2.py)
+9. Lastly try the web interface using Streamlit!! ***`streamlit run .\golu.py`***
 
 #### AWS profile creation using AWS CLI
 Download and install AWS CLI from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html based on our operating system.

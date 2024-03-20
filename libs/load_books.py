@@ -44,15 +44,17 @@ def load_file(filename):
     else:
         # Am I too rigid here?
         print("Unsupported extension!")
+        print("Only .md, .pdf, .xls, .xlsx, .doc adn .docx is supported.")
         sys.exit(0)
 
 
 def split_in_chunks_v2(my_document):
+    print("Inside split_in_chunks_v2..")
     HF_EOS_TOKEN_LENGTH = 1
     my_config = ReadConfig("config/config.ini")
     model_name = my_config.SentenceTransformer_model
     model = SentenceTransformer(model_name)
-    # print("Model max sequence length:", model.max_seq_length)
+    print("Model max sequence length:", model.max_seq_length)
     text_splitter = (
         RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
             tokenizer=AutoTokenizer.from_pretrained(model_name),
@@ -64,10 +66,12 @@ def split_in_chunks_v2(my_document):
 
 
 def load_python_book(filename):
+    print("Inside load_python_book..")
     book_data = load_file(filename)
     # Pay detail attention to those tiny []!! will save you lots of time.
     # [book_data] -- split_documents expects a list of Documents!!
     text_chunks = split_in_chunks_v2([book_data])
+    print("Completed load_python_book..")
     return text_chunks
 
 
@@ -100,15 +104,18 @@ def load_python_book_into_milvus(filename, book_name=None, book_author=None):
         print("Database Version: ", utility.get_server_version())
         # Loading collection
         milvus_collection = Collection("PythonBooks")
+        print("Collection loaded...")
 
         model_name = my_config.SentenceTransformer_model
         model = SentenceTransformer(model_name)
+        print("SentenceTransformer...")
         book_chunks = load_python_book(filename)
         v_book_name = book_name
         v_book_author = book_author
         for chunk in book_chunks:
             book_chunk = clean_chunk_data(chunk)
-            book_chunk_vec = model.encode(book_chunk)
+            print("Cleaned the chunks..")
+            book_chunk_vec = model.encode(book_chunk, normalize_embeddings=True)
             book_chunk_id = str(uuid.uuid4())
             # Insertion will be improved later with batch insert
             row_insert = [[book_chunk_id],
@@ -117,6 +124,7 @@ def load_python_book_into_milvus(filename, book_name=None, book_author=None):
                           [book_chunk],
                           [book_chunk_vec]
                           ]
+            print("Trying to insert...")
             insert_result = milvus_collection.insert(row_insert)
             print(insert_result)
         milvus_collection.flush()

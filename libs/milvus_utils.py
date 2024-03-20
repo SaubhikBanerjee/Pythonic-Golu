@@ -77,6 +77,7 @@ def create_milvus_collection(collection_name, connection_alias):
 
 
 def create_milvus_collection_v2(collection_name, connection_alias):
+    my_config = ReadConfig("config/config.ini")
     try:
         # If collection exists we are dropping it.
         if utility.has_collection(collection_name):
@@ -108,7 +109,7 @@ def create_milvus_collection_v2(collection_name, connection_alias):
         book_chunk_vec = FieldSchema(
             name="book_chunk_vec",
             dtype=DataType.FLOAT_VECTOR,
-            dim=768
+            dim=my_config.vector_dim
         )
         # Step 2: Collection schema
         collection_schema = CollectionSchema(

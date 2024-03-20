@@ -10,6 +10,8 @@ Give the reference document or link if available. Give explanation if available.
 Context: {context}
 Question: {question}
 
-Only return the helpful answer and reference / explanation below and nothing else.
+Only return the helpful answer then reference / explanation each in new line below and nothing else.
+If you don't know the answer based on the context say you don't know.
 Helpful answer:
+
 """
