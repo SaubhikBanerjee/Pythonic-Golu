@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Pythonic-Golu | Pythonic Golu: A Retrieval Augmented Generation (RAG) application using Milvus and Python.</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Pythonic-Golu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Pythonic Golu: A Retrieval Augmented Generation (RAG) application using Milvus and Python." />
+<meta property="og:description" content="Pythonic Golu: A Retrieval Augmented Generation (RAG) application using Milvus and Python." />
+<link rel="canonical" href="https://saubhikbanerjee.github.io/Pythonic-Golu/" />
+<meta property="og:url" content="https://saubhikbanerjee.github.io/Pythonic-Golu/" />
+<meta property="og:site_name" content="Pythonic-Golu" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Pythonic-Golu" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Pythonic Golu: A Retrieval Augmented Generation (RAG) application using Milvus and Python.","headline":"Pythonic-Golu","name":"Pythonic-Golu","url":"https://saubhikbanerjee.github.io/Pythonic-Golu/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/Pythonic-Golu/assets/css/style.css?v=bcf970a6283853ee11f48cbebac93132091ba849">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/Pythonic-Golu/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://saubhikbanerjee.github.io/Pythonic-Golu/">Pythonic-Golu</a></h1>
+      
+
+      <h3 id="-"><img src="images%2Fmilvus_icon.png" alt="milvus_icon.png" /> <img src="images%2Fpython_icon.png" alt="python_icon.png" /></h3>
+<h1 id="pythonic-golu-a-retrieval-augmented-generation-rag-application-using-milvus-and-python">Pythonic Golu: A Retrieval Augmented Generation (RAG) application using Milvus and Python.</h1>
+<h3 id="who-when-why">Who, When, Why?</h3>
+<p>👨🏾‍💻 Author: Saubhik Banerjee <br />
+📅 Version: 1.0 March 2024<br />
+📜 License: This project is licensed under the MIT license. Please feel free to use it, 
+    just don’t do bad things with it.</p>
+
+<h2 id="aim-of-pythonic-golu">Aim of Pythonic Golu</h2>
+<p>The Pythonic Golu has the aim to answer any Python question on the earth! and specifically
+all the questions asked in PCEP, PCAP and LinkedIn Python tests.<br />
+I will try to host it with Streamlit cloud with a persistence Milvus instance, so that people
+can leverage my huge Python database of question and answers.<br />
+At present, you can use it in your local Milvus with your own dataset. Just clone this repo and 
+get started!  <strong><em>Pythonic Golu is completely on open source, so no extra cost!!</em></strong>
+Golu has flexibility to use OpenAI also but the cost is yours!</p>
+<h3 id="how-to-getrun-milvus">How to get/run Milvus?</h3>
+<p>Well, I am using a docker compose file, which is part of the repository. You can use that too
+and necessary command to get start with that image is also given.</p>
+<h3 id="what-is-rag-and-why">What is RAG and Why?</h3>
+<p>When we ask a question to LLM, LLM can answer based on what it is trained on, but what if
+we have our own data / private knowledge base? for example, you have your own Python question 
+answer knowledgebase based on various certification exams.
+This data is not public and LLM is not trained on this. Also, if you need very current data
+for example: question based on 5th India England Test Match 2024. In those cases RAG (<strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration)
+comes for your rescue.
+Using RAG a context information can be produced to LLM from our own unstructured data.</p>
+<h4 id="rag-vs-fine-tuning">RAG Vs Fine Tuning</h4>
+<p>Why not fine-tuning a LLM? Well tuning a LLM is time and effort consuming. It need specialized expertise.
+On top of that training LLM has a huge cost. You need to constantly train your LLM as your data
+will probably evolve with respect to time (e.g. new Python questions in various tests).
+So, in that case RAG gives an cost-effective yet optimized solution.</p>
+<h3 id="general-rag-architecture">General RAG Architecture</h3>
+<p>What is general RAG architecture? This diagram is taken from <strong>IBM</strong> architectural document which 
+neatly describes the general RAG architecture.
+<img src="images%2Fgeneral_rag.png" alt="general_rag.png" /></p>
+<h3 id="architecture-of-pythonic-golu">Architecture of Pythonic GOLU</h3>
+<p>Technically I am using Milvus v2.3.7 and Python 3.11.3. The over all architecture looks like:
+<img src="images%2Fgolu_architecture.png" alt="golu_architecture.png" /></p>
+<h3 id="the-files-in-this-repository">The files in this repository</h3>
+<h4 id="milvus_testpy"><a href="/Pythonic-Golu/milvus_test.py">milvus_test.py</a>:</h4>
+<p>This is a test file, it has been created during my initial interaction with Milvus. This is not 
+actually part of “Pythonic Golu”, but I kept it assuming it might be useful for some of you who are starting 
+fresh in Milvus!.</p>
+<h4 id="create_collection_and_indexpy"><a href="/Pythonic-Golu/create_collection_and_index.py">create_collection_and_index.py</a>:</h4>
+<p>This file is used for creating the two main Milvus collections namely 1. PythonBooks and 2. PythonQA
+This also creats the indexes associated with these collections.
+This program internally using the Python module <a href="libs%2Fmilvus_utils.py">milvus_utils.py</a>
+which does the actual job. All the modules written for this project resides in libs directory.</p>
+<h4 id="load_python_bookspy"><a href="/Pythonic-Golu/load_python_books.py">load_python_books.py</a>:</h4>
+<p>This is the main file used to load various Python Books into Milvus! All the actual work is done by the
+Python module called <a href="libs%2Fload_books.py">load_books.py</a></p>
+<h4 id="golupy"><a href="/Pythonic-Golu/golu.py">golu.py</a>:</h4>
+<p>This file is currently under development. I have a plan to deploy Pythonic Golu in Streamlit 
+cloud along with some persistence Milvus instance. To run this use <strong><em><code class="language-plaintext highlighter-rouge">streamlit run .\golu.py</code></em></strong>
+This is locally functional and can produce output.</p>
+<h4 id="flush_all_milvus_collectionpy"><a href="libs%2Fflush_all_milvus_collection.py">flush_all_milvus_collection.py</a>:</h4>
+<p>This is a stand-alone file used to flush and compacting Milvus collection. There is a problem with flush
+in earlier version of Milvus. https://github.com/milvus-io/milvus/discussions/31195</p>
+<h4 id="semantic_searchpy"><a href="libs%2Fsemantic_search.py">semantic_search.py</a>:</h4>
+<p>This is the library used to do a semantic search on Milvus with your question!.</p>
+<h4 id="run_semantic_searchpy"><a href="/Pythonic-Golu/run_semantic_search.py">run_semantic_search.py</a>:</h4>
+<p>Run some native semantic search using native Pymilvus. Internally it is using <a href="libs%2Fsemantic_search.py">semantic_search.py</a></p>
+<h4 id="run_semantic_search_langchainpy"><a href="/Pythonic-Golu/run_semantic_search_langchain.py">run_semantic_search_langchain.py</a>:</h4>
+<p>Run semantic search using Langchain. This is also internally using <a href="libs%2Fsemantic_search.py">semantic_search.py</a></p>
+<h4 id="ask_questions_v1py"><a href="/Pythonic-Golu/ask_questions_v1.py">ask_questions_v1.py</a>:</h4>
+<p>Join all the pieces together and get a response from local LLM using LangChain RetrievalQA.</p>
+
+<h3 id="why-pythonic-golu-is-slow">Why Pythonic Golu is slow?</h3>
+<p>Well, I have observed this as one of the problem with Golu. I am running this in my laptop
+which doesn’t have any GPU. I am only relying on CPU.
+If you have GPU power, then definitely that will be faster.
+Golu is much faster if you use the OpenAI version, but remember that can be costly!</p>
+<h1 id="startup-">Startup 🚀</h1>
+<ol>
+  <li>Clone this repo <code class="language-plaintext highlighter-rouge">git clone https://github.com/SaubhikBanerjee/Pythonic-Golu</code></li>
+  <li>Go into the directory <code class="language-plaintext highlighter-rouge">cd Pythonic-Golu</code></li>
+  <li>Setup your Milvus database and update config.ini accordingly.</li>
+  <li>Run  <a href="/Pythonic-Golu/create_collection_and_index.py">create_collection_and_index.py</a> to create Milvus collections &amp; indexes.</li>
+  <li>Run  <a href="/Pythonic-Golu/load_python_books.py">load_python_books.py</a> to load some data from your documents.</li>
+  <li>Now try some semantic search! <a href="/Pythonic-Golu/run_semantic_search.py">run_semantic_search.py</a> and <a href="/Pythonic-Golu/run_semantic_search_langchain.py">run_semantic_search_langchain.py</a></li>
+  <li>Next try asking some questions<img src="/Pythonic-Golu/ask_questions_v1.py" alt="ask_questions_v1.py" />. This is with local Llama2.</li>
+  <li>Next try asking some question with OpenAI gpt-3.5-turbo! <a href="/Pythonic-Golu/ask_questions_v2.py">ask_questions_v2.py</a></li>
+  <li>Lastly try the web interface using Streamlit!! <strong><em><code class="language-plaintext highlighter-rouge">streamlit run .\golu.py</code></em></strong></li>
+</ol>
+
+<h4 id="aws-profile-creation-using-aws-cli">AWS profile creation using AWS CLI</h4>
+<p>Download and install AWS CLI from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html based on our operating system.
+Use <code class="language-plaintext highlighter-rouge">aws configure --profile your_profile_name</code> and use this profile name in your configuration file. For more information please refer to AWS user guide.</p>
+
+<h4 id="how-to-download-a-local-llm">How to download a local LLM?</h4>
+<p>https://towardsdatascience.com/running-llama-2-on-cpu-inference-for-document-q-a-3d636037a3d8
+https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/tree/main</p>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/SaubhikBanerjee/Pythonic-Golu/edit/master-new/readME.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
