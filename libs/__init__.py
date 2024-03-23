@@ -5,7 +5,8 @@ from libs.milvus_utils import (connect_to_milvus,
                                create_milvus_collection_v2,
                                create_vector_index,
                                create_scalar_index,
-                               disconnect_from_milvus
+                               disconnect_from_milvus,
+                               connect_to_milvus_zila
                                )
 from libs.load_books import load_python_book_into_milvus
 from libs.semantic_search import milvus_vector_search_book, milvus_vector_search_langchain_book

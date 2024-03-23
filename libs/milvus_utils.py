@@ -8,6 +8,24 @@ import sys
 from libs.read_config import ReadConfig
 
 
+def connect_to_milvus_zila(connection_alias):
+    try:
+        my_config = ReadConfig("config/config.ini")
+        # Connecting to my local Milvus in docker image.
+        connections.connect(connection_alias,
+                            uri=my_config.public_end_point,
+                            token=my_config.zila_api_key
+                            )
+        print("Connected to Milvus!")
+        # Check if the server is ready.
+        print("Database Version: ", utility.get_server_version())
+        return connection_alias
+    except Exception as e:
+        print("Problem in connecting to Milvus")
+        print(e)
+        sys.exit(0)
+
+
 def connect_to_milvus(connection_alias):
     try:
         my_config = ReadConfig("config/config.ini")
