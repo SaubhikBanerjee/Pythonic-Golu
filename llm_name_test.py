@@ -1,3 +1,7 @@
+"""
+This file is not part of main repository. This is just a test I have conducted on
+about response of "What is your official name as LLM?" in various LLMs and in various situation.
+"""
 from langchain_community.llms import CTransformers
 from langchain_community.llms import HuggingFaceHub
 from libs.read_config import ReadConfig
