@@ -15,3 +15,16 @@ If you don't know the answer based on the context say you don't know.
 Helpful answer:
 
 """
+qa_template_zephyr = """
+<|system|>
+Using the information contained in the context, 
+give a concise answer to the question, If the answer is contained in the context, also report the reference URL.
+If the answer cannot be deduced from the context say I don't know.
+</s>
+<|user|>
+Context: {context}
+Question: {question}
+Remember only return AI answer
+</s>
+<|assistant|>
+"""

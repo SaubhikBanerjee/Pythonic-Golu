@@ -2,6 +2,7 @@ import streamlit as st
 from libs import upload_file
 from ask_questions_v1 import ask_question
 from ask_questions_v2 import ask_question_openai
+from ask_questions_v3 import ask_question_zephyr
 import timeit
 
 
@@ -10,7 +11,9 @@ def main():
     st.header("Pythonic Golu :books:")
     select_option = st.selectbox(
         r'$\textsf{\large What is the preferred LLM?}$',
-        ('Local Llama2 - Run locally free but slower!', 'OpenAI - Faster and efficient - NOT free!'),
+        ('Local Llama2 - Run locally free but slower!', 'OpenAI - Faster and efficient - NOT free!',
+         'HuggingFaceHub - zephyr-7b-beta'
+         ),
         index=None,
         placeholder="Select your LLM..."
     )
@@ -24,6 +27,8 @@ def main():
                     response = ask_question(user_question)
                 elif select_option == 'OpenAI - Faster and efficient - NOT free!':
                     response = ask_question_openai(user_question)
+                elif select_option == 'HuggingFaceHub - zephyr-7b-beta':
+                    response = ask_question_zephyr(user_question)
                 else:
                     response = ask_question(user_question)
             with st.chat_message("assistant"):
