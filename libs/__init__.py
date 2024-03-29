@@ -13,3 +13,5 @@ from libs.semantic_search import milvus_vector_search_book, milvus_vector_search
 from libs.prompts import qa_template, qa_template_zephyr
 from libs.local_llm import local_llm
 from libs.upload_s3 import upload_file
+from libs.load_books_zila import load_python_book_into_milvus as load_python_book_into_zila
+from libs.ask_questions_online import ask_question_openai, ask_question_zephyr, ask_question_mistral

@@ -5,21 +5,26 @@ Here we are using RetrievalQA from langchain along with Langchain Milvus vector 
 and as_retriever.
 The only problem I can see is you can't get the score which is available in Langchain
 similarity search or even in PyMilvus collection.search()
-We use OpenAI gpt-3.5-turbo as LLM here.
+We use meta-llama/Llama-2-70b-chat-hf as LLM here --> to use it with inference api,
+you need pro subscription!
+THIS FILE IS NOT FUNCTIONAL!!
 """
 import timeit
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Milvus
 from libs.read_config import ReadConfig
 from langchain.chains import RetrievalQA
-from libs import qa_template_zephyr
+from libs import qa_template
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import HuggingFaceHub
+from langchain_community.llms import HuggingFaceEndpoint
+# from langchain_community.llms import VertexAI
+from langchain_google_vertexai import VertexAI
 
 
 # Wrap prompt template in a PromptTemplate object
 def set_qa_prompt():
-    prompt = PromptTemplate(template=qa_template_zephyr,
+    prompt = PromptTemplate(template=qa_template,
                             input_variables=['context', 'question'])
     return prompt
 
@@ -34,7 +39,7 @@ def build_retrieval_qa(_llm, prompt, _retriever):
     return db_qa
 
 
-def ask_question_zephyr(query_text):
+def ask_question_llama2(query_text):
     my_config = ReadConfig("config/config.ini")
     top_k = int(my_config.search_top_k)
     search_parameters = {
@@ -71,17 +76,23 @@ def ask_question_zephyr(query_text):
                                        )
     qa_prompt = set_qa_prompt()
     # Testing with zephyr -- HuggingFaceHub.
-    zephyr_llm = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta",
-                                model_kwargs={"temperature": 0.001,
-                                              "max_new_tokens": 512,
-                                              "repetition_penalty": 1.1,
-                                              "max_length": 64,
-                                              "top_p": 0.9,
-                                              "return_full_text": False
-                                              },
-                                huggingfacehub_api_token=my_config.hf_api_token
-                                )
-    dbqa = build_retrieval_qa(zephyr_llm, qa_prompt, retriever)
+    # mistral_llm = HuggingFaceHub(repo_id="teknium/OpenHermes-2.5-Mistral-7B",
+    #                              model_kwargs={"temperature": 0.001,
+    #                                            "max_new_tokens": 512,
+    #                                            "repetition_penalty": 1.1,
+    #                                            "max_length": 64,
+    #                                            "top_p": 0.9,
+    #                                            "return_full_text": False
+    #                                            },
+    #                              huggingfacehub_api_token=my_config.hf_api_token
+    #                              )
+    mistral_llm = VertexAI()
+    # mistral_llm = HuggingFaceEndpoint(
+    #     repo_id="Intel/neural-chat-7b-v3-3",
+    #     max_length=128, temperature=0.001,
+    #     huggingfacehub_api_token="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"
+    # )
+    dbqa = build_retrieval_qa(mistral_llm, qa_prompt, retriever)
     llm_response = dbqa.invoke(query_text)
     return llm_response
 
@@ -89,7 +100,7 @@ def ask_question_zephyr(query_text):
 if __name__ == '__main__':
     query = input("Please enter the question: ")
     start_time = timeit.default_timer()  # Start timer
-    response = ask_question_zephyr(query)
+    response = ask_question_llama2(query)
 
     # Displaying the outcome.
     print(f'\n\033[92m Answer: \033[0;0m {response["result"]}')

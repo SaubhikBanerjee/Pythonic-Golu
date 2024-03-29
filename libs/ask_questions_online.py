@@ -1,0 +1,187 @@
+"""
+This file used to ask question from your document. The document is already chunked
+and vectorize into your Milvus database and ready for searching.
+Here we are using RetrievalQA from langchain along with Langchain Milvus vector store
+and as_retriever.
+The only problem I can see is you can't get the score which is available in Langchain
+similarity search or even in PyMilvus collection.search()
+We use OpenAI gpt-3.5-turbo as LLM here.
+"""
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Milvus
+from langchain.chains import RetrievalQA
+from libs import qa_template, qa_template_zephyr
+from langchain_openai import ChatOpenAI
+from langchain.prompts import PromptTemplate
+import streamlit as st
+from langchain_community.llms import HuggingFaceHub
+
+
+# Wrap prompt template in a PromptTemplate object
+def set_qa_prompt():
+    prompt = PromptTemplate(template=qa_template,
+                            input_variables=['context', 'question'])
+    return prompt
+
+
+def set_qa_prompt_zephyr():
+    prompt = PromptTemplate(template=qa_template_zephyr,
+                            input_variables=['context', 'question'])
+    return prompt
+
+
+def build_retrieval_qa(_llm, prompt, _retriever):
+    db_qa = RetrievalQA.from_chain_type(llm=_llm,
+                                        chain_type='stuff',
+                                        retriever=_retriever,
+                                        return_source_documents=True,
+                                        verbose=True,
+                                        chain_type_kwargs={'prompt': prompt})
+    return db_qa
+
+
+def ask_question_openai(query_text, api_key):
+    top_k = 3
+    search_parameters = {
+        "metric_type": "COSINE",
+        "offset": 0,
+        "ignore_growing": False,
+        "params": {"ef": 32}
+    }
+    model_name = st.secrets.LLM.SentenceTransformer_model
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    connection_args = {"uri": st.secrets.MILVUS.public_end_point,
+                       "token": st.secrets.MILVUS.zila_api_key,
+                       "user": st.secrets.MILVUS.zila_cloud_user,
+                       "password": st.secrets.MILVUS.zila_cloud_password
+                       }
+    # Get existing collection from Milvus with changing index parameters
+    vector_db: Milvus = Milvus(
+        embedding_function=embeddings,
+        collection_name="PythonBooks",
+        search_params=search_parameters,
+        connection_args=connection_args,
+        text_field="book_chunk",
+        vector_field="book_chunk_vec",
+        consistency_level="Session"
+    )
+
+    # Tested similarity search using LangChain.
+    # docs = vector_db.similarity_search(query=query_text, k=1)
+    retriever = vector_db.as_retriever(search_kwargs={'k': top_k,
+                                                      "additional": ["certainty"],
+                                                      "score_threshold": 0.9
+                                                      },
+                                       search_type="similarity"
+                                       )
+    qa_prompt = set_qa_prompt()
+    # Testing with OpenAI -- remember this is paid.
+    openai_llm = ChatOpenAI(model_name="gpt-3.5-turbo",
+                            temperature=0,
+                            openai_api_key=api_key
+                            )
+    dbqa = build_retrieval_qa(openai_llm, qa_prompt, retriever)
+    llm_response = dbqa.invoke(query_text)
+    return llm_response
+
+
+def ask_question_zephyr(query_text):
+    top_k = 3
+    search_parameters = {
+        "metric_type": "COSINE",
+        "offset": 0,
+        "ignore_growing": False,
+        "params": {"ef": 32}
+    }
+    model_name = st.secrets.LLM.SentenceTransformer_model
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    connection_args = {"uri": st.secrets.MILVUS.public_end_point,
+                       "token": st.secrets.MILVUS.zila_api_key,
+                       "user": st.secrets.MILVUS.zila_cloud_user,
+                       "password": st.secrets.MILVUS.zila_cloud_password
+                       }
+    # Get existing collection from Milvus with changing index parameters
+    vector_db: Milvus = Milvus(
+        embedding_function=embeddings,
+        collection_name="PythonBooks",
+        search_params=search_parameters,
+        connection_args=connection_args,
+        text_field="book_chunk",
+        vector_field="book_chunk_vec",
+        consistency_level="Session"
+    )
+
+    # Tested similarity search using LangChain.
+    # docs = vector_db.similarity_search(query=query_text, k=1)
+    retriever = vector_db.as_retriever(search_kwargs={'k': top_k,
+                                                      "additional": ["certainty"],
+                                                      "score_threshold": 0.9
+                                                      },
+                                       search_type="similarity"
+                                       )
+    qa_prompt = set_qa_prompt()
+    # Testing with zephyr -- HuggingFaceHub.
+    zephyr_llm = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-beta",
+                                model_kwargs={"temperature": 0.001,
+                                              "max_new_tokens": 512,
+                                              "repetition_penalty": 1.1,
+                                              "max_length": 64,
+                                              "top_p": 0.9,
+                                              "return_full_text": False
+                                              },
+                                huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
+                                )
+    dbqa = build_retrieval_qa(zephyr_llm, qa_prompt, retriever)
+    llm_response = dbqa.invoke(query_text)
+    return llm_response
+
+
+def ask_question_mistral(query_text):
+    top_k = 3
+    search_parameters = {
+        "metric_type": "COSINE",
+        "offset": 0,
+        "ignore_growing": False,
+        "params": {"ef": 32}
+    }
+    model_name = st.secrets.LLM.SentenceTransformer_model
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    connection_args = {"uri": st.secrets.MILVUS.public_end_point,
+                       "token": st.secrets.MILVUS.zila_api_key,
+                       "user": st.secrets.MILVUS.zila_cloud_user,
+                       "password": st.secrets.MILVUS.zila_cloud_password
+                       }
+    # Get existing collection from Milvus with changing index parameters
+    vector_db: Milvus = Milvus(
+        embedding_function=embeddings,
+        collection_name="PythonBooks",
+        search_params=search_parameters,
+        connection_args=connection_args,
+        text_field="book_chunk",
+        vector_field="book_chunk_vec",
+        consistency_level="Session"
+    )
+
+    # Tested similarity search using LangChain.
+    # docs = vector_db.similarity_search(query=query_text, k=1)
+    retriever = vector_db.as_retriever(search_kwargs={'k': top_k,
+                                                      "additional": ["certainty"],
+                                                      "score_threshold": 0.9
+                                                      },
+                                       search_type="similarity"
+                                       )
+    qa_prompt = set_qa_prompt()
+    # Testing with zephyr -- HuggingFaceHub.
+    mistral_llm = HuggingFaceHub(repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+                                 model_kwargs={"temperature": 0.001,
+                                               "max_new_tokens": 512,
+                                               "repetition_penalty": 1.1,
+                                               "max_length": 64,
+                                               "top_p": 0.9,
+                                               "return_full_text": False
+                                               },
+                                 huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
+                                 )
+    dbqa = build_retrieval_qa(mistral_llm, qa_prompt, retriever)
+    llm_response = dbqa.invoke(query_text)
+    return llm_response

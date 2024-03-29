@@ -11,7 +11,7 @@ from libs.read_config import ReadConfig
 def connect_to_milvus_zila(connection_alias):
     try:
         my_config = ReadConfig("config/config.ini")
-        # Connecting to my local Milvus in docker image.
+        # Connecting to my Milvus in Zilliz Cloud.
         connections.connect(connection_alias,
                             uri=my_config.public_end_point,
                             token=my_config.zila_api_key
