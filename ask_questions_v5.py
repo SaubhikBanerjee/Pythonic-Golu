@@ -90,7 +90,7 @@ def ask_question_llama2(query_text):
     # mistral_llm = HuggingFaceEndpoint(
     #     repo_id="Intel/neural-chat-7b-v3-3",
     #     max_length=128, temperature=0.001,
-    #     huggingfacehub_api_token="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"
+    #     huggingfacehub_api_token=
     # )
     dbqa = build_retrieval_qa(mistral_llm, qa_prompt, retriever)
     llm_response = dbqa.invoke(query_text)
