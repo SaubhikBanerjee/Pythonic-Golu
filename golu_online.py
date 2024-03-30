@@ -45,6 +45,7 @@ def main():
                     response = ask_question_zephyr(user_question)
                 else:
                     response = ask_question_zephyr(user_question)
+            st.balloons()
             with st.chat_message("assistant"):
                 st.markdown(response["result"])
                 end_time = timeit.default_timer()  # End timer
@@ -78,7 +79,8 @@ def main():
                         print(file_path)
                         # Load to Milvus
                         load_python_book_into_zila(file_path, book_name_val, book_author_val)
-                        os.remove(file_path)
+                        st.snow()
+                    os.remove(file_path)
 
 
 if __name__ == '__main__':
