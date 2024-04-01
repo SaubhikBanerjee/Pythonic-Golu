@@ -9,7 +9,8 @@ class ReadConfig:
         self.config.optionxform = str
         file = self.config.read(self.config_file)
         if not file:
-            raise ValueError("Config file not found!!")
+            # raise ValueError("Config file not found!!")
+            pass # Due to Streamlit Cloud!!
         for section in self.config.sections():
             self.__dict__.update(self.config.items(section))
 
