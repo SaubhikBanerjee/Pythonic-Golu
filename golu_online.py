@@ -6,6 +6,8 @@ import os
 
 
 def main():
+
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
     st.set_page_config(page_title="Pythonic Golu!",
                        page_icon=":books:",
                        layout="wide",

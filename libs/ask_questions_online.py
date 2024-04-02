@@ -5,7 +5,8 @@ Here we are using RetrievalQA from langchain along with Langchain Milvus vector 
 and as_retriever.
 The only problem I can see is you can't get the score which is available in Langchain
 similarity search or even in PyMilvus collection.search()
-We use OpenAI gpt-3.5-turbo as LLM here.
+We use OpenAI gpt-3.5-turbo and two others as LLM here.
+This particular file is used in streamlit cloud.
 """
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Milvus

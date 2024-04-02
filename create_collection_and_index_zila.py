@@ -2,9 +2,12 @@
 This file used to create two main collections used in the application. Those are
 1. PythonQA
 2. PythonBooks
-This file is also used to create required indexes on the collection.
+This file is also used to create required indexes on the collection in Zila cloud Milvus.
 """
 # Good Reads: https://github.com/christy/ZillizDemos/blob/main/milvus_onboarding/hello_world_milvus.ipynb
+# https://github.com/SaubhikBanerjee/Pythonic-Golu
+# https://pythonic-golu.streamlit.app/
+
 
 from libs import (connect_to_milvus_zila,
                   create_milvus_collection,
