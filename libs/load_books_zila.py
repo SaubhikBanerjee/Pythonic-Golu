@@ -128,8 +128,8 @@ def load_python_book_into_milvus(filename, book_name=None, book_author=None):
         connections.disconnect("default")
 
     except Exception as e:
-        print("Problem in loading data!")
-        print(e)
+        st.write("Problem in loading data!")
+        st.write(e)
         sys.exit(0)
     finally:
         connections.disconnect("default")
