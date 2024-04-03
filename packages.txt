@@ -1,3 +1,5 @@
 libgl1-mesa-glx
 libglib2.0-0
 poppler-utils
+tesseract-ocr
+tesseract-ocr-por
