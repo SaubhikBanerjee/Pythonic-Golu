@@ -8,7 +8,7 @@ import os
 def main():
 
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    st.set_page_config(page_title="Pythonic Golu!",
+    st.set_page_config(page_title="Pythonic Golu! - AI chatbot for Python question answering",
                        page_icon=":books:",
                        layout="wide",
                        menu_items={
@@ -59,7 +59,7 @@ def main():
                 st.info(f'Source Text: {doc.page_content}')
 
     with st.sidebar:
-        st.subheader("You can upload you Python book here:")
+        st.subheader("You can upload your Python book here:")
         st.write("Please try to upload books/documents related to Python, AI, RAG or Data Science."
                  " I will have a periodic check on the data uploaded. Anything not matching with the sprit"
                  " of the application will be deleted."
