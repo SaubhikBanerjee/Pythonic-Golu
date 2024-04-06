@@ -21,6 +21,9 @@ def main():
                        )
     st.write("Developed by Saubhik Banerjee, "
              "Source Code: https://github.com/SaubhikBanerjee/Pythonic-Golu")
+    st.markdown(":rainbow[Golu is an AI chatbot (RAG application) to answer your Python questions!!"
+                " You can take preparation of your PCEP, PCAP and interview with Golu. She is equipped with"
+                " huge question dumps and related material!]")
     st.subheader("Pythonic Golu :books:")
     select_option = st.selectbox(
         r'$\textsf{\large What is the preferred LLM?}$',
