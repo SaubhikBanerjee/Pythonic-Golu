@@ -16,7 +16,8 @@ get started!  ***Pythonic Golu is completely on open source, so no extra cost!!*
 Golu has flexibility to use OpenAI also but the cost is yours!
 ### How to get/run Milvus?
 Well, I am using a docker compose file, which is part of the repository. You can use that too
-and necessary command to get start with that image is also given.
+and necessary command to get start with that image is also given. <br />
+https://milvus.io/docs/v2.0.x/install_standalone-docker.md 
 ### What is RAG and Why?
 When we ask a question to LLM, LLM can answer based on what it is trained on, but what if
 we have our own data / private knowledge base? for example, you have your own Python question 
