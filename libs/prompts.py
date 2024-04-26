@@ -28,3 +28,17 @@ Remember only return AI answer
 </s>
 <|assistant|>
 """
+
+qa_template_phi = """
+<|system|>
+Using the information contained in the context, 
+give a concise answer to the question, If the answer is contained in the context, also report the reference URL.
+If the answer cannot be deduced from the context say I don't know.
+<|end|>
+<|user|>
+Context: {context}
+Question is below. Remember only return AI answer
+Question: {question}
+<|end|>
+<|assistant|>
+"""

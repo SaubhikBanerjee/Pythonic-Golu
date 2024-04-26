@@ -10,8 +10,9 @@ from libs.milvus_utils import (connect_to_milvus,
                                )
 from libs.load_books import load_python_book_into_milvus
 from libs.semantic_search import milvus_vector_search_book, milvus_vector_search_langchain_book
-from libs.prompts import qa_template, qa_template_zephyr
+from libs.prompts import qa_template, qa_template_zephyr, qa_template_phi
 from libs.local_llm import local_llm
 from libs.upload_s3 import upload_file
 from libs.load_books_zila import load_python_book_into_milvus as load_python_book_into_zila
-from libs.ask_questions_online import ask_question_openai, ask_question_zephyr, ask_question_mistral
+from libs.ask_questions_online import (ask_question_openai, ask_question_zephyr,
+                                       ask_question_mistral, ask_question_phi3)

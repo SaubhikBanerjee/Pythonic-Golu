@@ -11,11 +11,12 @@ This particular file is used in streamlit cloud.
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Milvus
 from langchain.chains import RetrievalQA
-from libs import qa_template, qa_template_zephyr
+from libs import qa_template, qa_template_zephyr, qa_template_phi
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 import streamlit as st
 from langchain_community.llms import HuggingFaceHub
+from transformers import AutoModel
 
 
 # Wrap prompt template in a PromptTemplate object
@@ -27,6 +28,12 @@ def set_qa_prompt():
 
 def set_qa_prompt_zephyr():
     prompt = PromptTemplate(template=qa_template_zephyr,
+                            input_variables=['context', 'question'])
+    return prompt
+
+
+def set_qa_prompt_phi():
+    prompt = PromptTemplate(template=qa_template_phi,
                             input_variables=['context', 'question'])
     return prompt
 
@@ -172,7 +179,7 @@ def ask_question_mistral(query_text):
                                        search_type="similarity"
                                        )
     qa_prompt = set_qa_prompt()
-    # Testing with zephyr -- HuggingFaceHub.
+    # Testing with Mistral -- HuggingFaceHub.
     mistral_llm = HuggingFaceHub(repo_id="mistralai/Mistral-7B-Instruct-v0.2",
                                  model_kwargs={"temperature": 0.001,
                                                "max_new_tokens": 512,
@@ -184,5 +191,57 @@ def ask_question_mistral(query_text):
                                  huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
                                  )
     dbqa = build_retrieval_qa(mistral_llm, qa_prompt, retriever)
+    llm_response = dbqa.invoke(query_text)
+    return llm_response
+
+
+def ask_question_phi3(query_text):
+    top_k = 3
+    search_parameters = {
+        "metric_type": "COSINE",
+        "offset": 0,
+        "ignore_growing": False,
+        "params": {"ef": 32}
+    }
+    model_name = st.secrets.LLM.SentenceTransformer_model
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    connection_args = {"uri": st.secrets.MILVUS.public_end_point,
+                       "token": st.secrets.MILVUS.zila_api_key,
+                       "user": st.secrets.MILVUS.zila_cloud_user,
+                       "password": st.secrets.MILVUS.zila_cloud_password
+                       }
+    # Get existing collection from Milvus with changing index parameters
+    vector_db: Milvus = Milvus(
+        embedding_function=embeddings,
+        collection_name="PythonBooks",
+        search_params=search_parameters,
+        connection_args=connection_args,
+        text_field="book_chunk",
+        vector_field="book_chunk_vec",
+        consistency_level="Session"
+    )
+
+    # Tested similarity search using LangChain.
+    # docs = vector_db.similarity_search(query=query_text, k=1)
+    retriever = vector_db.as_retriever(search_kwargs={'k': top_k,
+                                                      "additional": ["certainty"],
+                                                      "score_threshold": 0.9
+                                                      },
+                                       search_type="similarity"
+                                       )
+    qa_prompt = set_qa_prompt_phi()
+    # Testing with Phi3 -- HuggingFaceHub.
+    phi3_llm = HuggingFaceHub(repo_id="microsoft/Phi-3-mini-4k-instruct",
+                              model_kwargs={"temperature": 0.001,
+                                            "max_new_tokens": 512,
+                                            "trust_remote_code": True,
+                                            "repetition_penalty": 1.1,
+                                            "max_length": 64,
+                                            "top_p": 0.9,
+                                            "return_full_text": False
+                                            },
+                              huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
+                              )
+    dbqa = build_retrieval_qa(phi3_llm, qa_prompt, retriever)
     llm_response = dbqa.invoke(query_text)
     return llm_response

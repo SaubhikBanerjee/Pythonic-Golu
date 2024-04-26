@@ -1,5 +1,5 @@
 import streamlit as st
-from libs import ask_question_openai, ask_question_zephyr, ask_question_mistral
+from libs import ask_question_openai, ask_question_zephyr, ask_question_mistral, ask_question_phi3
 import timeit
 from libs import load_python_book_into_zila
 import os
@@ -29,7 +29,8 @@ def main():
         r'$\textsf{\large What is the preferred LLM?}$',
         ('OpenAI - Faster and efficient - NOT free!',
          'HuggingFaceHub - zephyr-7b-beta',
-         'HuggingFaceHub - Mistral-7B-Instruct-v0.2'
+         'HuggingFaceHub - Mistral-7B-Instruct-v0.2',
+         'HuggingFaceHub - Phi-3-mini-4k-instruct'
          ),
         index=None,
         placeholder="Select your LLM..."
@@ -48,6 +49,8 @@ def main():
                     response = ask_question_openai(user_question, api_key)
                 elif select_option == 'HuggingFaceHub - zephyr-7b-beta':
                     response = ask_question_zephyr(user_question)
+                elif select_option == 'HuggingFaceHub - Phi-3-mini-4k-instruct':
+                    response = ask_question_phi3(user_question)
                 else:
                     response = ask_question_zephyr(user_question)
             st.balloons()
