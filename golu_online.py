@@ -51,6 +51,9 @@ def main():
                     response = ask_question_zephyr(user_question)
                 elif select_option == 'HuggingFaceHub - Phi-3-mini-4k-instruct':
                     response = ask_question_phi3(user_question)
+                    pattern = "<|end|>"
+                    index = response["result"].find(pattern)
+                    response["result"] = response["result"][0:index:1]
                 else:
                     response = ask_question_zephyr(user_question)
             st.balloons()

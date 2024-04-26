@@ -237,7 +237,6 @@ def ask_question_phi3(query_text):
                                             "trust_remote_code": True,
                                             "repetition_penalty": 1.1,
                                             "max_length": 64,
-                                            "top_p": 0.9,
                                             "return_full_text": False
                                             },
                               huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
