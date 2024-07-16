@@ -16,7 +16,7 @@ from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 import streamlit as st
 from langchain_community.llms import HuggingFaceHub
-from transformers import AutoModel
+from langchain_ibm import WatsonxLLM
 
 
 # Wrap prompt template in a PromptTemplate object
@@ -242,5 +242,70 @@ def ask_question_phi3(query_text):
                               huggingfacehub_api_token=st.secrets.HUGGINGFACE.hf_api_token
                               )
     dbqa = build_retrieval_qa(phi3_llm, qa_prompt, retriever)
+    llm_response = dbqa.invoke(query_text)
+    return llm_response
+
+
+def ask_question_granite(query_text):
+    top_k = 3
+    search_parameters = {
+        "metric_type": "COSINE",
+        "offset": 0,
+        "ignore_growing": False,
+        "params": {"ef": 32}
+    }
+
+    parameters = {
+        "temperature": 0.001,
+        "decoding_method": "greedy",
+        "max_new_tokens": 512,
+        "min_new_tokens": 1,
+        "stop_sequences": [],
+        "repetition_penalty": 1.05
+
+    }
+
+    model_name = st.secrets.LLM.SentenceTransformer_model
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    connection_args = {"uri": st.secrets.MILVUS.public_end_point,
+                       "token": st.secrets.MILVUS.zila_api_key,
+                       "user": st.secrets.MILVUS.zila_cloud_user,
+                       "password": st.secrets.MILVUS.zila_cloud_password
+                       }
+    # Get existing collection from Milvus with changing index parameters
+    vector_db: Milvus = Milvus(
+        embedding_function=embeddings,
+        collection_name="PythonBooks",
+        search_params=search_parameters,
+        connection_args=connection_args,
+        text_field="book_chunk",
+        vector_field="book_chunk_vec",
+        consistency_level="Session"
+    )
+
+    # Tested similarity search using LangChain.
+    # docs = vector_db.similarity_search(query=query_text, k=1)
+    retriever = vector_db.as_retriever(search_kwargs={'k': top_k,
+                                                      "additional": ["certainty"],
+                                                      "score_threshold": 0.9
+                                                      },
+                                       search_type="similarity"
+                                       )
+    qa_prompt = set_qa_prompt()
+    # Testing with Granite -- Wattsonx.
+    # model_id = ModelTypes.GRANITE_13B_CHAT
+    project_id = st.secrets.WATSONX.project_id
+    credentials = {
+        "url": st.secrets.WATSONX.url,
+        "apikey": st.secrets.WATSONX.apikey
+    }
+    watsonx_granite = WatsonxLLM(
+        model_id="ibm/granite-13b-chat-v2",
+        url=credentials.get("url"),
+        apikey=credentials.get("apikey"),
+        project_id=project_id,
+        params=parameters
+    )
+    dbqa = build_retrieval_qa(watsonx_granite, qa_prompt, retriever)
     llm_response = dbqa.invoke(query_text)
     return llm_response

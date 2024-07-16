@@ -1,5 +1,5 @@
 import streamlit as st
-from libs import ask_question_openai, ask_question_zephyr, ask_question_mistral, ask_question_phi3
+from libs import ask_question_openai, ask_question_zephyr, ask_question_mistral, ask_question_phi3, ask_question_granite
 import timeit
 from libs import load_python_book_into_zila
 import os
@@ -30,7 +30,8 @@ def main():
         ('OpenAI - Faster and efficient - NOT free!',
          'HuggingFaceHub - zephyr-7b-beta',
          'HuggingFaceHub - Mistral-7B-Instruct-v0.2',
-         'HuggingFaceHub - Phi-3-mini-4k-instruct'
+         'HuggingFaceHub - Phi-3-mini-4k-instruct',
+         'Watsonx.ai IBM granite-13b-chat-v2'
          ),
         index=None,
         placeholder="Select your LLM..."
@@ -49,6 +50,8 @@ def main():
                     response = ask_question_openai(user_question, api_key)
                 elif select_option == 'HuggingFaceHub - zephyr-7b-beta':
                     response = ask_question_zephyr(user_question)
+                elif select_option == 'Watsonx.ai IBM granite-13b-chat-v2':
+                    response = ask_question_granite(user_question)
                 elif select_option == 'HuggingFaceHub - Phi-3-mini-4k-instruct':
                     response = ask_question_phi3(user_question)
                     pattern = "<|end|>"
@@ -80,7 +83,7 @@ def main():
         book_name_val = st.text_input("Enter the book name:", value="Unknown")
         book_author_val = st.text_input("Enter the author name:", value="Unknown")
         if st.button("Upload to Milvus"):
-            with st.spinner("Uploading to Milvus..."):
+            with st.spinner("Uploading to Milvus. It may take while...."):
                 if upload_docs is not None:
                     file_path = os.path.join(os.getcwd(), upload_docs.name)
 

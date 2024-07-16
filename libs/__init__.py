@@ -15,4 +15,5 @@ from libs.local_llm import local_llm
 from libs.upload_s3 import upload_file
 from libs.load_books_zila import load_python_book_into_milvus as load_python_book_into_zila
 from libs.ask_questions_online import (ask_question_openai, ask_question_zephyr,
-                                       ask_question_mistral, ask_question_phi3)
+                                       ask_question_mistral, ask_question_phi3,
+                                       ask_question_granite)
