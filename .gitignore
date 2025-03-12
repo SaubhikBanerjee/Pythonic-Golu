@@ -165,3 +165,8 @@ hello_milvus.py
 *.bkp
 milvus.py
 /.streamlit/secrets.toml
+/libs/devmilvus.key
+/libs/devmilvus.pem
+/libs/ca.crt
+/libs/prodtls.crt
+/libs/prodtls.key
