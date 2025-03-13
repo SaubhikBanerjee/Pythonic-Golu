@@ -29,21 +29,22 @@ def query_postgres(project_id, corpus_type):
         review_cursor.execute("SET search_path='corpus'")
         # Now building the query text.
         # You can play with the query.
-        sql_text = "select fileid, count(*) cnt " \
-                   "FROM CORPUS.corpusdetail " \
-                   "WHERE corpusdetail.PROJECTID= %(project_id)s " \
-                   "AND corpusdetail.STATUS='active' " \
-                   "AND corpusdetail.CORPUS_TYPE= %(corpus_type)s " \
+        sql_text = "select c.fileid fileid, i.filename filename,  count(*) cnt " \
+                   "FROM CORPUS.corpusdetail c, CORPUS.ingestionsummary i " \
+                   "WHERE c.PROJECTID= %(project_id)s " \
+                   "AND c.STATUS='active' " \
+                   "AND c.CORPUS_TYPE in %(corpus_type)s   " \
                    "AND REF_SECTION_ID IS NOT NULL " \
-                   "GROUP BY fileid ORDER BY fileid "
+                   "AND c.PROJECTID=i.PROJECTID AND c.fileid=i.originalfileid " \
+                   "GROUP BY c.fileid, i.filename ORDER BY fileid "
         params = {'project_id': project_id, 'corpus_type': corpus_type}
-
+        review_cursor.mogrify(sql_text, params)
         # Executing the cursor
         review_cursor.execute(sql_text, params)
         sql_result = review_cursor.fetchall()
         conn.close()
         # Return the result set as pandas data frame
-        df = pd.DataFrame(sql_result, columns=['file_id', 'postgres_count'])
+        df = pd.DataFrame(sql_result, columns=['file_id', 'postgres_file_name', 'postgres_count'])
         return df
     except Exception as e:
         print("Error in query_postgres")
@@ -119,11 +120,12 @@ def find_unique_file_ids_milvus(collection_name):
     try:
         # Pass the collection name for query
         collection = Collection(collection_name)
-        df1 = pd.DataFrame(columns=['file_id'])
+        df1 = pd.DataFrame(columns=['file_id', 'milvus_file_name'])
         i = 0
         # You can play with the batch size to find optimum size.
         batch_size = 1000
-        query_iterator = collection.query_iterator(batch_size, expr="", output_fields=["fileid"])
+        query_iterator = collection.query_iterator(batch_size, expr="",
+                                                   output_fields=["fileid", "filename"])
 
         while True:
             # turn to the next page
@@ -134,7 +136,7 @@ def find_unique_file_ids_milvus(collection_name):
                 query_iterator.close()
                 break
             for j in range(len(res)):
-                df1.loc[i] = [res[j]["fileid"]]
+                df1.loc[i] = [res[j]["fileid"], res[j]["filename"]]
                 i = i + 1
         # Removing the duplicates.
         df1.drop_duplicates(subset=['file_id'], keep='last', inplace=True)
@@ -149,20 +151,29 @@ def find_unique_file_ids_milvus(collection_name):
 
 if __name__ == '__main__':
     # reconciliation between postgres and milvus
-    pg_result = query_postgres('GenAIAABolton', 'document')
+    # The below variable is a tuple, if you want to pass only one value then also
+    # you need to keep it ad tuple e.g. ('document',)
+    v_corpus_type = ('document', 'feedback', 'knowledge_articles', 'service_catalog')
+    v_project_id = 'Firmenich'
+    v_collection_name = 'Firmenich'
+
+    pg_result = query_postgres(v_project_id, v_corpus_type)
     print("The number of unique file ids in Postgres: ", pg_result.shape[0])
 
-    milvus_file_ids = find_unique_file_ids_milvus('GenAIAABolton')
+    milvus_file_ids = find_unique_file_ids_milvus(v_collection_name)
     file_ids = milvus_file_ids['file_id'].tolist()
     print("The number of unique file ids in Milvus: ", milvus_file_ids.shape[0])
-    milvus_result = query_milvus('GenAIAABolton', file_ids)
-    merged_result = pd.merge(pg_result, milvus_result, on='file_id', how='outer')
+    milvus_result = query_milvus(v_collection_name, file_ids)
+    milvus_result_filename = pd.merge(milvus_file_ids, milvus_result, on='file_id', how='inner')
+    print("The number of unique file ids with name in Milvus: ", milvus_result_filename.shape[0])
+    merged_result = pd.merge(pg_result, milvus_result_filename, on='file_id', how='outer')
     conditions = merged_result["postgres_count"] == merged_result["milvus_count"]
     merged_result["matched"] = 0
     merged_result.loc[conditions, "matched"] = 1
+    merged_result.to_csv("recon_total.csv", index=False)
     print("Mismatched file Ids")
     print("*" * 40)
     mismatched_results = merged_result[merged_result["matched"] == 0]
-    print(mismatched_results)
-    mismatched_results.to_csv("recon.csv")
+    print(mismatched_results.to_string(index=False))
+    mismatched_results.to_csv("recon.csv", index=False)
 
