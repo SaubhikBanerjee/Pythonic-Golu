@@ -14,9 +14,9 @@ def load_milvus_collection():
                             user="root",
                             password='Milvus',
                             secure=True,
-                            client_key_path='.\libs\\aiopsdev2tls.key',
-                            client_pem_path='.\libs\\aiopsdev2tls.crt',
-                            ca_pem_path='.\libs\\aiopsdev2tls.crt',
+                            client_key_path='.\\Certs\\aiopsdev3tls.key',
+                            client_pem_path='.\\Certs\\aiopsdev3tls.crt',
+                            ca_pem_path='.\\Certs\\aiopsdev3tls.crt',
                             show_startup_banner=True
                             )
         print("Connected to Milvus")
@@ -30,16 +30,18 @@ def load_milvus_collection():
 
     try:
         for collection in all_collections:
-            print("Loading & Flushing collection name: ", collection)
+            # print("Loading & Flushing collection name: ", collection)
 
             # Loading collection
-            milvus_collection = Collection(collection)
+            # milvus_collection = Collection(collection)
             # Check the loading progress and loading status
-            print("\033[91m Load state before:\033[00m ", str(utility.load_state(collection)))
+            # print(milvus_collection.schema)
+            # print(milvus_collection.indexes)
+            print("\033[91m Load state:\033[00m ", str(utility.load_state(collection)))
             if str(utility.load_state(collection)).strip() == "Loaded":
-                print(utility.loading_progress(collection))
+                print("Loaded:", utility.loading_progress(collection))
                 print("Trying to unload...")
-                milvus_collection.release()
+                # milvus_collection.release()
                 print("\033[92m Load state after:\033[00m ", utility.load_state(collection))
             # Flushing collection
             # milvus_collection.flush(timeout=None)

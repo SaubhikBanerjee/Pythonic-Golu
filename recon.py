@@ -30,7 +30,10 @@ def query_postgres(project_id, corpus_type):
         # Now building the query text.
         # You can play with the query.
         sql_text = "select c.fileid fileid, i.filename filename,  count(*) cnt " \
-                   "FROM CORPUS.corpusdetail c, CORPUS.ingestionsummary i " \
+                   "FROM CORPUS.corpusdetail c, " \
+                   "(SELECT DISTINCT originalfileid, filename, PROJECTID " \
+                   " FROM CORPUS.ingestionsummary " \
+                   " WHERE PROJECTID= %(project_id)s ) i " \
                    "WHERE c.PROJECTID= %(project_id)s " \
                    "AND c.STATUS='active' " \
                    "AND c.CORPUS_TYPE in %(corpus_type)s   " \
@@ -64,9 +67,9 @@ def query_milvus(collection_name, file_id_list):
                             user=st.secrets.RECONCILIATION.milvus_user,
                             password=st.secrets.RECONCILIATION.milvus_password,
                             secure=True,
-                            client_key_path='.\\libs\\prodtls.key',
-                            client_pem_path='.\\libs\\prodtls.crt',
-                            ca_pem_path='.\\libs\\prodtls.crt',
+                            client_key_path='.\\Certs\\prodtls.key',
+                            client_pem_path='.\\Certs\\prodtls.crt',
+                            ca_pem_path='.\\Certs\\prodtls.crt',
                             show_startup_banner=True
                             )
         print("Connected to Milvus")
@@ -106,9 +109,9 @@ def find_unique_file_ids_milvus(collection_name):
                             user=st.secrets.RECONCILIATION.milvus_user,
                             password=st.secrets.RECONCILIATION.milvus_password,
                             secure=True,
-                            client_key_path='.\\libs\\prodtls.key',
-                            client_pem_path='.\\libs\\prodtls.crt',
-                            ca_pem_path='.\\libs\\prodtls.crt',
+                            client_key_path='.\\Certs\\prodtls.key',
+                            client_pem_path='.\\Certs\\prodtls.crt',
+                            ca_pem_path='.\\Certs\\prodtls.crt',
                             show_startup_banner=True
                             )
         print("Connected to Milvus")
@@ -149,13 +152,74 @@ def find_unique_file_ids_milvus(collection_name):
             connections.disconnect("default")
 
 
+def query_milvus_iterator(collection_name, file_id_list):
+    # This function is not ready yet, can add some performance benefit
+    # if implemented, but it is challenging as Milvus doesn't have grouping search in scalar field.
+
+    try:
+        # Connect to secure Milvus.
+        connections.connect("default",
+                            host="localhost",
+                            server_name="localhost",
+                            port=19530,
+                            user=st.secrets.RECONCILIATION.milvus_user,
+                            password=st.secrets.RECONCILIATION.milvus_password,
+                            secure=True,
+                            client_key_path='.\\Certs\\prodtls.key',
+                            client_pem_path='.\\Certs\\prodtls.crt',
+                            ca_pem_path='.\\Certs\\prodtls.crt',
+                            show_startup_banner=True
+                            )
+        print("Connected to Milvus")
+    except Exception as e:
+        print("Problem in connecting to Milvus")
+        print(e)
+        sys.exit(0)
+
+    try:
+        # Pass the collection name for query
+        collection = Collection(collection_name)
+        df1 = pd.DataFrame(columns=['file_id', 'milvus_count'])
+        i = 0
+        # build query expression
+        expr = "fileid in ["
+        for fid in file_id_list:
+            expr = expr + '"' + str(fid) + '" ,'
+        expr = expr + "]"
+        print(expr)
+
+        # You can play with the batch size to find optimum size.
+        batch_size = 1000
+        query_iterator = collection.query_iterator(batch_size, expr=expr,
+                                                   output_fields=["fileid", "count(*)"])
+        while True:
+            # turn to the next page
+            res = query_iterator.next()
+            if len(res) == 0:
+                print("query iteration finished, close")
+                # close the iterator
+                query_iterator.close()
+                break
+            for j in range(len(res)):
+                print(res[j])
+                df1.loc[i] = [res[j]["fileid"], res[j]["count(*)"]]
+                i = i + 1
+        return df1
+    except Exception as e:
+        print("Problem in query_milvus")
+        print(e)
+    finally:
+        if connections is not None:
+            connections.disconnect("default")
+
+
 if __name__ == '__main__':
     # reconciliation between postgres and milvus
     # The below variable is a tuple, if you want to pass only one value then also
     # you need to keep it ad tuple e.g. ('document',)
     v_corpus_type = ('document', 'feedback', 'knowledge_articles', 'service_catalog')
-    v_project_id = 'Firmenich'
-    v_collection_name = 'Firmenich'
+    v_project_id = 'MAPFREBR'
+    v_collection_name = 'MAPFREBR'
 
     pg_result = query_postgres(v_project_id, v_corpus_type)
     print("The number of unique file ids in Postgres: ", pg_result.shape[0])
@@ -176,4 +240,3 @@ if __name__ == '__main__':
     mismatched_results = merged_result[merged_result["matched"] == 0]
     print(mismatched_results.to_string(index=False))
     mismatched_results.to_csv("recon.csv", index=False)
-

@@ -169,3 +169,5 @@ milvus.py
 /libs/*.crt
 /libs/prodtls.crt
 /libs/*.key
+/Certs/
+*.csv
